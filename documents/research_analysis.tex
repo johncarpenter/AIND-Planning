@@ -1,0 +1,107 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Journal Article
+% LaTeX Template
+% Version 1.3 (9/9/13)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%----------------------------------------------------------------------------------------
+%       PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+\documentclass[paper=letter, fontsize=12pt]{article}
+\usepackage[english]{babel} % English language/hyphenation
+\usepackage[utf8]{inputenc}
+\usepackage{float}
+\usepackage{blindtext}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+%\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+\usepackage{titlesec} % Allows customization of titles
+
+\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
+\renewcommand\thesubsection{\Roman{subsection}} % Roman numerals for subsections
+
+\titleformat{\section}[block]{\large\scshape\centering}{\thesection.}{1em}{} % Change the look of the section titles
+\titleformat{\subsection}[block]{\large}{\thesubsection.}{1em}{} % Change the look of the section titles
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+%----------------------------------------------------------------------------------------
+%       TITLE SECTION
+%----------------------------------------------------------------------------------------
+\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{Logic and Planning: Research Review}} % Article title
+\author{
+\large
+{\textsc{John Carpenter, PEng.}}\\[2mm]}
+\date{}
+
+%----------------------------------------------------------------------------------------
+\begin{document}
+\maketitle % Insert title
+\section{Introduction}
+
+Logic and planning within AI is the process of determining a course of action given some constraints and requisites. While the concepts of logic and planning existed well before 1970s, there was a concerted effort and that time to arrive at a language to adaquately describe and model different scenarios. The languages had to be flexible enough to describe a variety of situations yet still maintain a structure that can be coded within a computer model. The following articles describe some of the early work that went into determining those languages.
+
+\section{STRIPS}
+
+In 1971,Richard Fikes and Nils Nilsson\cite{fikesandnilsson1971} began to describe a language and process to handle automatic plan generation. This language, STRIPS became the cornerstone for generalizing the "planning" problem in algorithmic terms that are easily manipulated and understood by researchers and machines. What was novel about the STRIPS algorithm was the inclusion of both addition and deletion steps for each operator. With those additional steps some algorithmic simplifying can occur\cite{fikesandnilsson1993}. This reduced the steps in goal finding and made it easier to build plans for much more complex interactions.
+
+But the STRIPS framework was not without problems. It was limited to a single action executing at one time and the complexity of problems was limited\cite{fikesandnilsson1993}. Even with those shortcomings the STRIPS framework became an intuitive way to handle automatic planning in almost any scenario. Quite a few changes to the framework have occurred over the years but the language introduced by Fikes and Nilsson was a viable foundation to continue research in the field.
+
+
+\section{Fast Planning Through Planning Graph Analysis}
+
+One attempt to reduce the complexity of the planning problem was proposed by Avrim Blum and Merrick Furst\cite{Blum95fastplanning}. Their Graphplan introduced a concept to handle complex planning operations that were overly complex for the STRIPS framework. The approach centered around two(2) concepts.
+First, the state changes in the STRIPS framework were exchanged for a time-series approach. STRIPS framework assumes actions take place instantaneously and independent of other actions\cite{fikesandnilsson1993}. Graphplan creates a flow through time presenting a series of actions and dependencies. This flow provides significant opportunities to reduce the search space, similar to tree pruning.\cite{Blum95fastplanning}
+Secondly, the approach begins by creating a Planning Graph. This planning graph provides a compact view of the whole problem and exposes some constraints that can be simplified before searching\cite{Blum95fastplanning}.
+
+Graphplan brought together many different methods STRIPS, partial-order planning and graph searches into a single process. This introduced many key advantages to planning that weren't previously avaible. This process was shown to find the shortest path to a goal if a solution exists\cite{Blum95fastplanning} which can be valuable in planning a problem but also in reducing the state actions and features to only those sets that are required for the solution. Also, given the flow nature of the actions it is possible to pass information dynamically within the graph. This can provide a "learning" algorithm allowing faster paths to the solution.
+
+\section{Stochastic Search}
+
+The Graphplan algorithm made significant contributions in simplifying the search and goal finding for a large number of planning problems. But inherent to the design the "planning graph" was slow at solving arbitrarily large and complex problems. Problems where the search space is combinatorial (traveling salesman problem) Graphplan doesn't benefit from reducing the problem size as in other types of problems. Kautz and Selman\cite{Kautz96stochastic} discuss a number of different stochastic methods that can be used that make the problems much more efficient to solve. Using a stochastic methods such as WalkSAT\cite{selman94walksat}, Selman showed that they could produce orders of magnitude performance improvement over traditional systematic approaches in Graphplan. While this wasn't the first time stochastic approaches were used for solving problems they were assumed to be unstable or unsuited for planning problems. The approach Selman et al, took in their paper\cite{Kautz96stochastic} was to convert the Graphplan into a series of clauses which can then be fed into the appropriate stochastic model, WalkSAT in this example.
+
+The results were that the stochastic approach was able to drastically reduce the solution time compared to a Graphplan. However, while the stochastic approach was computationally more effective it isn't always guaranteed to arrive at the optimal solution. Selman proposes that more work can be achieved by combining the strengths of both approaches for solving a general problem.
+
+\section{Conclusions}
+
+This paper touches on the historical approaches to general problem solving and presents some of the core frameworks and thinking behind the research. From STRIPS to the Graphplan and further it can be shown that using a general framework you can reduce complicated problems into much simpler components.
+
+\begin{thebibliography}{99}
+\bibitem [1]{fikesandnilsson1971}
+Richard E. Fikes and Nils J. Nilsson. 1971. \textit{STRIPS: a new approach to the application of theorem proving to problem solving.} In Proceedings of the 2nd international joint conference on Artificial intelligence (IJCAI'71). Morgan Kaufmann Publishers Inc., San Francisco, CA, USA, 608-620.
+\bibitem [2]{fikesandnilsson1993}
+Richard E. Fikes, Nils J. Nilsson  1995. \textit{STRIPS, a retrospective}. Computer Science Department, Stanford University, Stanford, CA
+\bibitem [3]{Kautz96stochastic}
+H. Kautz, B. Selman 1996. \textit{Pushing the Envelope: Planning: Propositional Logic, and Stochastic Search}. In Proceedings of AAAI-96, Portland, OR.
+\bibitem [4]{Blum95fastplanning}
+Avrim L. Blum and Merrick L. Furst 1995. \textit{Fast Planning Through Planning Graph Analysis}. ARTIFICIAL INTELLIGENCE 1 Vol 90, pp 1636-1642
+\bibitem [4]{selman94walksat}
+B. Selman, H. Kautz, B. Cohen 1994. \textit{Noise Strategies for Local Search}. Proceedings AAAI-94, Seattle, WA, pp 337-343
+\end{thebibliography}
+
+%----------------------------------------------------------------------------------------
+%\end{multicols}
+\end{document}

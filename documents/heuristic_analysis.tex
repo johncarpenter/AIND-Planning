@@ -1,0 +1,174 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Journal Article
+% LaTeX Template
+% Version 1.3 (9/9/13)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%----------------------------------------------------------------------------------------
+%       PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+\documentclass[paper=letter, fontsize=12pt]{article}
+\usepackage[english]{babel} % English language/hyphenation
+\usepackage[utf8]{inputenc}
+\usepackage{float}
+\usepackage{blindtext}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+%\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+\usepackage{titlesec} % Allows customization of titles
+
+\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
+\renewcommand\thesubsection{\Roman{subsection}} % Roman numerals for subsections
+
+\titleformat{\section}[block]{\large\scshape\centering}{\thesection.}{1em}{} % Change the look of the section titles
+\titleformat{\subsection}[block]{\large}{\thesubsection.}{1em}{} % Change the look of the section titles
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+%----------------------------------------------------------------------------------------
+%       TITLE SECTION
+%----------------------------------------------------------------------------------------
+\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{AIND Logic and Planning Project Summary}} % Article title
+\author{
+\large
+{\textsc{John Carpenter, PEng.}}\\[2mm]}
+\date{}
+
+%----------------------------------------------------------------------------------------
+\begin{document}
+\maketitle % Insert title
+\section{Introduction}
+
+This project demonstrates different approaches to solving an air cargo simulated logistics and planning scenario. The project will review breadth first, depth first, uniform cost and A* searches with respect to solving a multiparameter logistic problem.
+
+\subsection{Scenarios}
+\begin{verbatim}
+- Air Cargo Action Schema:
+Action(Load(c, p, a),
+	PRECOND: At(c, a) ∧ At(p, a) ∧ Cargo(c) ∧ Plane(p) ∧ Airport(a)
+	EFFECT: ¬ At(c, a) ∧ In(c, p))
+Action(Unload(c, p, a),
+	PRECOND: In(c, p) ∧ At(p, a) ∧ Cargo(c) ∧ Plane(p) ∧ Airport(a)
+	EFFECT: At(c, a) ∧ ¬ In(c, p))
+Action(Fly(p, from, to),
+	PRECOND: At(p, from) ∧ Plane(p) ∧ Airport(from) ∧ Airport(to)
+	EFFECT: ¬ At(p, from) ∧ At(p, to))
+
+- Problem 1 initial state and goal:
+Init(At(C1, SFO) ∧ At(C2, JFK)
+	∧ At(P1, SFO) ∧ At(P2, JFK)
+	∧ Cargo(C1) ∧ Cargo(C2)
+	∧ Plane(P1) ∧ Plane(P2)
+	∧ Airport(JFK) ∧ Airport(SFO))
+Goal(At(C1, JFK) ∧ At(C2, SFO))
+
+- Problem 2 initial state and goal:
+Init(At(C1, SFO) ∧ At(C2, JFK) ∧ At(C3, ATL)
+	∧ At(P1, SFO) ∧ At(P2, JFK) ∧ At(P3, ATL)
+	∧ Cargo(C1) ∧ Cargo(C2) ∧ Cargo(C3)
+	∧ Plane(P1) ∧ Plane(P2) ∧ Plane(P3)
+	∧ Airport(JFK) ∧ Airport(SFO) ∧ Airport(ATL))
+Goal(At(C1, JFK) ∧ At(C2, SFO) ∧ At(C3, SFO))
+
+- Problem 3 initial state and goal:
+Init(At(C1, SFO) ∧ At(C2, JFK) ∧ At(C3, ATL) ∧ At(C4, ORD)
+	∧ At(P1, SFO) ∧ At(P2, JFK)
+	∧ Cargo(C1) ∧ Cargo(C2) ∧ Cargo(C3) ∧ Cargo(C4)
+	∧ Plane(P1) ∧ Plane(P2)
+	∧ Airport(JFK) ∧ Airport(SFO) ∧ Airport(ATL) ∧ Airport(ORD))
+Goal(At(C1, JFK) ∧ At(C3, JFK) ∧ At(C2, SFO) ∧ At(C4, SFO))
+
+\end{verbatim}
+
+
+\section{Test Results}
+
+Each simulation was run on:
+MacBook Pro (Retina, 13-inch, Early 2015), Processor 2.7Ghz i5, 8GB RAM DDR3.
+
+\subsection{Problem 1}
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c|c| }
+ \hline
+ Search Type & Expansions & Goal Tests & New Nodes & Plan Length & Time(s) \\
+ \hline
+ Breadth First & 59 & 109 & 344 & 6 & 0.08 \\
+ Depth First & 14 & 15 & 75 & 14 & 0.02 \\
+ A* & 103 & 105 & 635 & 6 & 0.16 \\
+ A* (IG Pre) & 51 & 53 & 288 & 6 & 0.07 \\
+ A* (Level Sum) & 47 & 49 & 260 & 6 & 9.2 \\
+ \hline
+\end{tabular}
+\end{center}
+
+\subsection{Problem 2}
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c|c| }
+ \hline
+ Search Type & Expansions & Goal Tests & New Nodes & Plan Length & Time(s) \\
+ \hline
+ Breadth First & 9217 & 20288 & 111313 & 9 & 238 \\
+ Depth First & 333 & 334 & 4741 & 333 & 3.94 \\
+ A* & 24717 & 24719 & 313147 & 9 & 4949 \\
+ A* (IG Pre) & 3032 & 3034 & 34820 & 9 & 89 \\
+ \hline
+\end{tabular}
+\end{center}
+
+
+\subsection{Problem 3}
+\begin{center}
+\begin{tabular}{ |c|c|c|c|c|c| }
+ \hline
+ Search Type & Expansions & Goal Tests & New Nodes & Plan Length & Time(s) \\
+ \hline
+ Breadth First & - & - & - &  -&  \\
+ Depth First & 381 & 382 & 4881 & 381 & 4.38 \\
+ A* &  &  &  &  &  \\
+ A* (IG Pre) & 17717 & 17719 & 190662 & 12 & 3617 \\
+ \hline
+\end{tabular}
+\end{center}
+
+Log files and the resultant solutions are found in the results/ subdirectory. Testing was halted at 10min and any solution that took longer than this was halted.
+
+\section{Results}
+
+There was a wide variation in the performance of the algorithms within the three(3) problems. Each problem has increasing complexity which highlighted the problems with certain algorithms.
+
+Even as the results each had some variation the pattern of the conclusions seem to remain the same. For the uniformed searches (Breadth First, Depth First); Depth First was significantly faster as expected but didn't return an optimal result since it stops when a solution is determined. Breadth first was much more successful as an algorithm but failed in cases where the solution set was quite large (P3). Even at that Breadth First was able to determine an optimal course if you are patient enough.
+
+For the informed A* searches, all three(3) patterns produced an optimal result. Ignoring the preconditions within the A* search had the fewest node expansions and that led to the fastest execution
+
+
+\section{Conclusions}
+In comparing the two result sets, the informed A* search while ignoring the preconditions would be the best approach for this problem. The A* search produces the optimal result and expands the fewest nodes in doing so.
+
+
+
+%----------------------------------------------------------------------------------------
+%\end{multicols}
+\end{document}
