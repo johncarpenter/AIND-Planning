@@ -61,7 +61,7 @@ coverage.xml
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
-*.log
+documents/*.log
 *.lot
 *.fls
 *.out
