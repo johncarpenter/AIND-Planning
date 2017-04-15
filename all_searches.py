@@ -3,7 +3,7 @@ import os
 if __name__=="__main__":
 
     problems = [1,2,3]
-    series = [10]
+    series = [1,2,3,4,5,6,7,8,9,10]
 
 
     os.system("python -m unittest tests.test_my_air_cargo_problems")
@@ -12,4 +12,4 @@ if __name__=="__main__":
 
     for p in problems:
         for s in series:
-            os.system("python run_search.py -p {} -s {} > results/results_p{}_s{}.log".format(p,s,p,s))
+            os.system("python run_search.py -p {} -s {} > results/results_p{}_s{}.log &".format(p,s,p,s))
