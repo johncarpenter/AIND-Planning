@@ -360,7 +360,8 @@ class PlanningGraph():
         for node_s in s_level:
             for node_a in a_level:
                 if node_s in node_a.effnodes:
-                    connect_node(node_a, node_s)
+                    node_s.parents.add(node_a)
+                    node_a.children.add(node_s)
 
         self.s_levels.append(s_level)
 
@@ -420,12 +421,14 @@ class PlanningGraph():
         :param node_a2: PgNode_a
         :return: bool
         '''
-        # TODO test for Inconsistent Effects between nodes
-        action1 = node_a1.action
-        action2 = node_a2.action
 
-        if common_exist(action1.effect_add,action2.effect_rem): return True
-        if common_exist(action1.effect_rem,action2.effect_add): return True
+        for add in node_a1.action.effect_add:
+            if add in node_a2.action.effect_rem:
+                return True
+
+        for rem in node_a2.action.effect_add:
+            if rem in node_a1.action.effect_rem:
+                return True
 
 
         return False
@@ -444,13 +447,22 @@ class PlanningGraph():
         :param node_a2: PgNode_a
         :return: bool
         '''
-        action1 = node_a1.action
-        action2 = node_a2.action
 
-        if common_exist(action1.precond_pos,action2.effect_rem): return True
-        if common_exist(action1.precond_neg,action2.effect_add): return True
-        if common_exist(action2.precond_pos,action1.effect_rem): return True
-        if common_exist(action2.precond_neg,action1.effect_add): return True
+        for add in node_a1.action.effect_add:
+            if add in node_a2.action.precond_neg:
+                    return True
+
+        for rem in node_a2.action.effect_add:
+            if rem in node_a1.action.precond_neg:
+                return True
+
+        for add in node_a1.action.effect_rem:
+            if add in node_a2.action.precond_pos:
+                    return True
+
+        for rem in node_a2.action.effect_rem:
+            if rem in node_a1.action.precond_pos:
+                return True
 
         return False
 
@@ -548,14 +560,3 @@ class PlanningGraph():
                     break
 
         return level_sum
-
-def connect_node(node_p:PgNode,node_c:PgNode):
-    node_c.parents.add(node_p)
-    node_p.children.add(node_c)
-
-def common_exist(lhs,rhs):
-    for l in lhs:
-        for r in rhs:
-            if l==r:
-                return True
-    return False
